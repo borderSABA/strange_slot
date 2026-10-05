@@ -1,5 +1,5 @@
 'use strict';
-const VERSION='0.1.6';
+const VERSION='0.1.7';
 // デプロイ後のWorker URLに変更してください。
 const SERVER_URL='https://strange-slot-online.naitoryo7110.workers.dev';
 const COMMON_PLAYER_NAME_KEY='boardgamePlayerName';

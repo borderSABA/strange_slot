@@ -4,13 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>STRANGE SLOT SIMULATOR ONLINE</title>
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css?v=0.1.7" />
 </head>
 <body>
 <header id="topbar">
   <div class="top-left"></div>
   <div id="gameTitle">STRANGE SLOT SIMULATOR ONLINE</div>
-  <div class="top-right"><span id="phaseMini"></span><span>v0.1.6</span><button id="leaveBtn" class="danger hidden">退出</button></div>
+  <div class="top-right"><span id="phaseMini"></span><span>v0.1.7</span><button id="leaveBtn" class="danger hidden">退出</button></div>
 </header>
 <main>
 <section id="titleView" class="view active">
@@ -78,21 +78,29 @@
       <div id="notebook" class="notebook"></div>
       <div class="setting-reference-wrap">
         <div class="setting-reference-title">設定1～6 参考表</div>
-        <div class="setting-reference-note">各数字は20枚中の枚数。棒が長いほど出やすい。</div>
+        <div class="setting-reference-note">各数字は20枚中の枚数</div>
         <div class="setting-reference-scroll">
-          <table class="setting-reference-table" aria-label="設定1から6のシンボル構成表">
+          <table class="setting-reference-table compact-reference" aria-label="設定1から6のシンボル構成表">
             <thead>
-              <tr><th class="symbol-col">シンボル</th><th>設定1</th><th>設定2</th><th>設定3</th><th>設定4</th><th>設定5</th><th>設定6</th></tr>
+              <tr>
+                <th class="setting-col">設定</th>
+                <th title="ベル"><span class="ref-icon">🔔</span></th>
+                <th title="ブドウ"><span class="ref-icon">🍇</span></th>
+                <th title="チェリー"><span class="ref-icon">🍒</span></th>
+                <th title="スイカ"><span class="ref-icon">🍉</span></th>
+                <th title="ベル＋チェリー"><span class="ref-icon">🔔🍒</span></th>
+                <th title="ベル＋スイカ"><span class="ref-icon">🔔🍉</span></th>
+                <th title="太陽"><span class="ref-icon">☀️</span></th>
+                <th title="月"><span class="ref-icon">🌙</span></th>
+              </tr>
             </thead>
             <tbody>
-              <tr><th><span class="ref-icon">🔔</span><span>ベル</span></th><td data-v="1">1</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="2">2</td><td data-v="3">3</td><td data-v="3">3</td></tr>
-              <tr><th><span class="ref-icon">🍇</span><span>ブドウ</span></th><td data-v="6">6</td><td data-v="6">6</td><td data-v="5">5</td><td data-v="5">5</td><td data-v="4">4</td><td data-v="4">4</td></tr>
-              <tr><th><span class="ref-icon">🍒</span><span>チェリー</span></th><td data-v="4">4</td><td data-v="3">3</td><td data-v="5">5</td><td data-v="2">2</td><td data-v="3">3</td><td data-v="4">4</td></tr>
-              <tr><th><span class="ref-icon">🔔🍒</span><span>ベル＋チェリー</span></th><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td></tr>
-              <tr><th><span class="ref-icon">🍉</span><span>スイカ</span></th><td data-v="3">3</td><td data-v="4">4</td><td data-v="2">2</td><td data-v="5">5</td><td data-v="4">4</td><td data-v="3">3</td></tr>
-              <tr><th><span class="ref-icon">🔔🍉</span><span>ベル＋スイカ</span></th><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td></tr>
-              <tr><th><span class="ref-icon">☀️</span><span>太陽</span></th><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td></tr>
-              <tr><th><span class="ref-icon">🌙</span><span>月</span></th><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td></tr>
+              <tr><th>1</th><td>1</td><td class="strong">6</td><td>4</td><td>3</td><td>1</td><td>2</td><td>2</td><td>1</td></tr>
+              <tr><th>2</th><td>1</td><td class="strong">6</td><td>3</td><td>4</td><td>2</td><td>1</td><td>1</td><td>2</td></tr>
+              <tr><th>3</th><td>2</td><td class="strong">5</td><td class="strong">5</td><td>2</td><td>1</td><td>2</td><td>2</td><td>1</td></tr>
+              <tr><th>4</th><td>2</td><td class="strong">5</td><td>2</td><td class="strong">5</td><td>2</td><td>1</td><td>1</td><td>2</td></tr>
+              <tr><th>5</th><td>3</td><td>4</td><td>3</td><td>4</td><td>1</td><td>2</td><td>2</td><td>1</td></tr>
+              <tr><th>6</th><td>3</td><td>4</td><td>4</td><td>3</td><td>2</td><td>1</td><td>1</td><td>2</td></tr>
             </tbody>
           </table>
         </div>
@@ -112,6 +120,6 @@
 <div id="modal" class="modal hidden"><div class="modal-card"><div id="modalBody"></div><div class="modal-actions"><button id="modalClose">閉じる</button></div></div></div>
 <div id="toast" class="toast hidden"></div>
 <div id="bigPop" class="big-pop hidden"></div>
-<script src="app.js"></script>
+<script src="app.js?v=0.1.7"></script>
 </body>
 </html>

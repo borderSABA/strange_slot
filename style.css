@@ -15,42 +15,39 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
 
 
 
-/* v0.1.6 notebook/reference layout */
-.setting-reference-wrap{flex:0 0 auto;margin-top:6px;border:1px solid #3b4d63;border-radius:10px;background:#0f151d;padding:8px;overflow:hidden}
-.setting-reference-title{font-size:13px;font-weight:900;color:#f2f6fb;letter-spacing:.03em;margin-bottom:2px}
-.setting-reference-note{font-size:10px;color:#93a7bc;margin-bottom:6px}
-.setting-reference-scroll{overflow:auto;max-width:100%;border:1px solid #2e3c4d;border-radius:7px}
-.setting-reference-table{width:100%;min-width:0;border-collapse:separate;border-spacing:0;table-layout:fixed;background:#111820;font-variant-numeric:tabular-nums}
-.setting-reference-table th,.setting-reference-table td{height:33px;border-right:1px solid #2c3948;border-bottom:1px solid #2c3948;text-align:center;padding:0 5px;position:relative;overflow:hidden}
-.setting-reference-table thead th{position:sticky;top:0;z-index:3;background:#253245;color:#f3f7fc;font-size:10px;font-weight:900;padding:4px 2px}
-.setting-reference-table .symbol-col{width:132px;text-align:left;padding-left:8px}
-.setting-reference-table tbody th{position:sticky;left:0;z-index:2;background:#18222e;text-align:left;white-space:nowrap;font-size:10px;font-weight:800;display:table-cell;padding:3px 4px}
-.setting-reference-table tbody th .ref-icon{display:inline-flex;width:38px;justify-content:center;font-size:16px;margin-right:3px;vertical-align:middle}
-.setting-reference-table td{font-size:12px;padding:3px 2px;font-weight:950;color:#f8fbff;background:#101720}
-.setting-reference-table td::before{content:"";position:absolute;left:4px;bottom:4px;top:4px;width:calc((100% - 8px) * var(--ratio));border-radius:4px;background:rgba(69,137,231,.26);z-index:0}
-.setting-reference-table td{--ratio:0}
-.setting-reference-table td[data-v="1"]{--ratio:.1667}
-.setting-reference-table td[data-v="2"]{--ratio:.3333}
-.setting-reference-table td[data-v="3"]{--ratio:.5}
-.setting-reference-table td[data-v="4"]{--ratio:.6667}
-.setting-reference-table td[data-v="5"]{--ratio:.8333}
-.setting-reference-table td[data-v="6"]{--ratio:1}
-.setting-reference-table td{isolation:isolate}
-.setting-reference-table td::after{content:attr(data-v);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1}
-.setting-reference-table td{color:transparent}
-.setting-reference-table tr:last-child th,.setting-reference-table tr:last-child td{border-bottom:0}
+/* v0.1.7 notebook/reference layout */
+#rightPane{display:grid;grid-template-rows:auto auto minmax(118px,1fr) auto;align-content:stretch;gap:5px;min-height:0}
+.notebook-head,.prediction-row{margin-bottom:0}
+.notebook{height:auto;min-height:0;max-height:none;overflow:auto}
+.setting-reference-wrap{margin-top:0;border:1px solid #3b4d63;border-radius:9px;background:#0f151d;padding:6px;overflow:hidden}
+.setting-reference-title{font-size:12px;font-weight:900;color:#f2f6fb;letter-spacing:.03em;margin:0 0 1px}
+.setting-reference-note{font-size:9px;color:#93a7bc;margin:0 0 4px}
+.setting-reference-scroll{overflow:hidden;max-width:100%;border:1px solid #2e3c4d;border-radius:6px}
+.setting-reference-table{width:100%;border-collapse:collapse;table-layout:fixed;background:#111820;font-variant-numeric:tabular-nums}
+.setting-reference-table th,.setting-reference-table td{border-right:1px solid #2c3948;border-bottom:1px solid #2c3948;text-align:center;padding:0;height:25px;font-weight:900}
+.setting-reference-table thead th{background:#253245;color:#f3f7fc;font-size:13px;height:29px}
+.setting-reference-table thead .setting-col{width:40px;font-size:9px}
+.setting-reference-table tbody th{width:40px;background:#18222e;color:#eaf1fa;font-size:11px}
+.setting-reference-table tbody td{font-size:12px;color:#f8fbff;background:#101720}
+.setting-reference-table td.strong{background:#213c63;color:#fff}
+.setting-reference-table .ref-icon{display:inline-block;font-size:16px;line-height:1;white-space:nowrap;transform:scale(.9)}
 .setting-reference-table th:last-child,.setting-reference-table td:last-child{border-right:0}
+.setting-reference-table tbody tr:last-child th,.setting-reference-table tbody tr:last-child td{border-bottom:0}
 @media(max-width:760px){
-  .setting-reference-wrap{margin-top:4px;padding:5px}
-  .setting-reference-title{font-size:11px}
+  #gameLayout{grid-template-rows:82px minmax(0,1fr) 46%}
+  #rightPane{grid-template-rows:auto auto minmax(74px,1fr) auto;gap:3px;padding:4px}
+  .notebook-head{grid-template-columns:1fr 66px 52px;font-size:11px}
+  .prediction-row{padding:2px;gap:3px}
+  .prediction-row .pred{width:25px;height:23px;font-size:10px}
+  .notebook{min-height:74px;max-height:none}
+  .setting-reference-wrap{padding:3px}
+  .setting-reference-title{font-size:9px}
   .setting-reference-note{display:none}
-  .setting-reference-table{min-width:0}
-  .setting-reference-table .symbol-col{width:84px}
-  .setting-reference-table th,.setting-reference-table td{height:20px;padding:0 1px}
-  .setting-reference-table thead th{font-size:8px}
-  .setting-reference-table tbody th{font-size:8px}
-  .setting-reference-table tbody th .ref-icon{width:24px;font-size:11px;margin-right:0}
-  .setting-reference-table td::after{font-size:10px}
+  .setting-reference-table th,.setting-reference-table td{height:18px}
+  .setting-reference-table thead th{height:22px}
+  .setting-reference-table thead .setting-col,.setting-reference-table tbody th{width:28px;font-size:8px}
+  .setting-reference-table tbody td{font-size:9px}
+  .setting-reference-table .ref-icon{font-size:11px;transform:scale(.82)}
 }
 
 .round-end-modal{position:fixed;inset:0;z-index:95;background:#000b;display:flex;align-items:center;justify-content:center}.round-end-card{width:min(520px,90vw);background:#202936;border:1px solid #637891;border-radius:14px;padding:24px;text-align:center;box-shadow:0 16px 45px #0009}.round-end-message{font-size:clamp(24px,5vw,42px);font-weight:900;margin-bottom:22px}.round-end-card .big{min-width:140px}
