@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>STRANGE SLOT SIMULATOR ONLINE</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header id="topbar">
+  <div class="top-left"><a href="https://bordersaba.github.io/">HOME</a><a href="https://bordersaba.github.io/#play-records">プレイ記録</a></div>
+  <div id="gameTitle">STRANGE SLOT SIMULATOR ONLINE</div>
+  <div class="top-right"><span id="phaseMini"></span><span>v0.1.0</span><button id="leaveBtn" class="danger hidden">退出</button></div>
+</header>
+<main>
+<section id="titleView" class="view active">
+  <div class="title-card">
+    <h1>STRANGE SLOT<br>SIMULATOR ONLINE</h1>
+    <label>名前<input id="nameInput" maxlength="16" autocomplete="nickname"></label>
+    <div id="rooms" class="rooms"></div>
+    <div class="hint">空ROOMの新規作成はホスト名「SABA」のみ。既存ROOMには自由に参加できます。</div>
+  </div>
+</section>
+
+<section id="lobbyView" class="view">
+  <div class="panel lobby-panel">
+    <div class="panel-title">ROOM <span id="roomNo"></span> ロビー</div>
+    <div id="lobbyPlayers" class="player-list"></div>
+    <div id="hostSettings" class="settings hidden">
+      <label>調査時間 <input id="investigateSec" type="number" min="30" max="900" step="10" value="240"> 秒</label>
+      <label>シンキング <input id="thinkingSec" type="number" min="10" max="600" step="10" value="60"> 秒</label>
+      <label>最終シンキング <input id="finalThinkingSec" type="number" min="10" max="900" step="10" value="120"> 秒</label>
+      <button id="saveSettingsBtn">設定保存</button>
+      <button id="startBtn" class="primary">ゲーム開始</button>
+      <button id="forceEndBtn" class="danger">強制終了</button>
+      <button id="resetBtn" class="danger">ROOM初期化</button>
+    </div>
+    <div class="personal-setting">
+      <label class="switchrow"><input id="autoRecordToggle" type="checkbox"> 出目を自動記録</label>
+      <span>OFF時は原作寄りの手動記録です。</span>
+    </div>
+  </div>
+</section>
+
+<section id="gameView" class="view">
+  <div id="gameLayout">
+    <aside id="leftPane">
+      <div id="roundInfo" class="status-box"></div>
+      <div id="playersGame" class="player-list compact"></div>
+      <div id="machineBox" class="machine-current"></div>
+      <button id="moveBtn" class="wide">台移動</button>
+      <button id="memoBtn" class="wide">メモ</button>
+    </aside>
+
+    <section id="centerPane">
+      <div id="timer" class="timer">--:--</div>
+      <div id="ticketArea" class="ticket-area hidden"></div>
+      <div id="machineSelectArea" class="machine-select hidden"></div>
+      <div id="drawArea" class="draw-area">
+        <div id="drawCards" class="draw-cards"></div>
+        <div class="controls">
+          <button id="yellowBtn">目押し ×0</button>
+          <button id="drawBtn" class="primary big">抽選</button>
+        </div>
+        <div id="bonusInfo" class="bonus-info"></div>
+      </div>
+      <div id="finalAnswerArea" class="final-answer hidden"></div>
+      <div id="resultArea" class="result hidden"></div>
+    </section>
+
+    <aside id="rightPane">
+      <div class="notebook-head">
+        <b>記録用紙</b>
+        <select id="noteMachineSelect"></select>
+        <button id="deleteModeBtn">削除</button>
+      </div>
+      <div id="predictionRow" class="prediction-row"></div>
+      <div id="notebook" class="notebook"></div>
+    </aside>
+  </div>
+</section>
+</main>
+
+<div id="modal" class="modal hidden"><div class="modal-card"><div id="modalBody"></div><div class="modal-actions"><button id="modalClose">閉じる</button></div></div></div>
+<div id="toast" class="toast hidden"></div>
+<div id="bigPop" class="big-pop hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>
