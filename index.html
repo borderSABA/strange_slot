@@ -8,17 +8,18 @@
 </head>
 <body>
 <header id="topbar">
-  <div class="top-left"><a href="https://bordersaba.github.io/">HOME</a><a href="https://bordersaba.github.io/#play-records">プレイ記録</a></div>
+  <div class="top-left"></div>
   <div id="gameTitle">STRANGE SLOT SIMULATOR ONLINE</div>
-  <div class="top-right"><span id="phaseMini"></span><span>v0.1.0</span><button id="leaveBtn" class="danger hidden">退出</button></div>
+  <div class="top-right"><span id="phaseMini"></span><span>v0.1.2</span><button id="leaveBtn" class="danger hidden">退出</button></div>
 </header>
 <main>
 <section id="titleView" class="view active">
   <div class="title-card">
     <h1>STRANGE SLOT<br>SIMULATOR ONLINE</h1>
     <label>名前<input id="nameInput" maxlength="16" autocomplete="nickname"></label>
+    <div class="room-toolbar"><button id="refreshRoomsBtn">ROOM更新</button></div>
     <div id="rooms" class="rooms"></div>
-    <div class="hint">空ROOMの新規作成はホスト名「SABA」のみ。既存ROOMには自由に参加できます。</div>
+    <div class="hint">空ROOMの新規作成には共通ホスト権限が必要です。既存ROOMには自由に参加できます。</div>
   </div>
 </section>
 
