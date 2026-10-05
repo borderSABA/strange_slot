@@ -145,7 +145,7 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
 }
 
 
-/* v0.1.11 mobile: prioritize full record sheet, shrink draw board */
+/* v0.1.12 mobile: prioritize full record sheet, shrink draw board */
 @media(max-width:760px){
   #gameLayout{
     grid-template-rows:70px minmax(150px,29%) minmax(0,1fr);
@@ -213,4 +213,81 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
   .setting-reference-table th,.setting-reference-table td{min-height:0;height:auto;font-size:11px}
   .setting-reference-table thead th{min-height:0;height:auto}
   .setting-reference-table .ref-icon{font-size:14px}
+}
+
+/* v0.1.12 mobile: guaranteed full record frame + reference row 6 visibility */
+@media(max-width:760px){
+  main{height:calc(100dvh - 42px)}
+  #gameLayout{
+    height:100%;
+    grid-template-rows:62px 126px minmax(0,1fr);
+    gap:2px;
+    padding:2px;
+    overflow:hidden;
+  }
+  #leftPane{
+    grid-template-columns:1fr 1fr 76px 58px;
+    gap:2px;
+    padding:2px;
+  }
+  #leftPane .status-box,#leftPane .machine-current{padding:2px;font-size:9px;line-height:1.05}
+  #moveBtn,#memoBtn{padding:3px 1px;font-size:10px;height:28px}
+  #centerPane{padding:2px;overflow:hidden}
+  .timer{font-size:19px;height:21px;line-height:21px}
+  .draw-area{height:calc(100% - 21px);gap:2px;justify-content:center}
+  .draw-cards{height:53px;min-height:53px;gap:2px;padding:0}
+  .draw-cards .slot-card{
+    flex-basis:calc((100% - 10px)/6);
+    width:calc((100% - 10px)/6);
+    max-width:39px;
+    border-radius:4px;
+    padding:1px;
+    font-size:6px;
+  }
+  .draw-cards .slot-card .icon{font-size:17px;line-height:1;margin:0}
+  .controls{height:25px;gap:4px}
+  .controls button{padding:2px 6px;font-size:10px;height:25px}
+  .controls .big{font-size:11px;padding:2px 12px}
+  .bonus-info{font-size:8px;line-height:1;height:10px;min-height:10px;overflow:hidden}
+
+  #rightPane{
+    min-height:0;
+    height:100%;
+    grid-template-rows:28px minmax(0,1fr);
+    gap:2px;
+    padding:2px;
+    overflow:hidden;
+  }
+  .notebook-head{height:28px;min-height:28px;grid-template-columns:minmax(0,1fr) 58px 44px;gap:2px}
+  .sheet-tab{font-size:9px;padding:4px}
+  .notebook-head select{height:25px;font-size:9px;padding:1px}
+  #deleteModeBtn{height:25px;font-size:9px;padding:1px}
+  .record-panel{height:100%;min-height:0;grid-template-rows:25px minmax(0,1fr);gap:1px;overflow:hidden}
+  .prediction-row{height:25px;min-height:25px;padding:1px;gap:2px;overflow:hidden}
+  .prediction-row b{font-size:9px;white-space:nowrap}
+  .prediction-row .pred{width:21px;height:21px;flex:0 0 21px;font-size:9px;padding:0}
+  .notebook{
+    height:100%;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-x:auto;
+    overflow-y:hidden;
+    border:1px solid #36465a;
+  }
+  .note-grid{grid-template-columns:64px 32px repeat(var(--cols),27px)}
+  .note-cell,.note-head{height:24px;min-height:24px;font-size:8px;line-height:1}
+  .note-symbol{left:0;padding-left:2px}
+  .note-total{left:64px}
+  .note-square span{font-size:10px}
+
+  .setting-reference-wrap{height:100%;min-height:0;padding:3px;overflow:hidden}
+  .setting-reference-title{font-size:10px;line-height:14px;height:14px;margin:0 0 1px}
+  .setting-reference-note{display:none}
+  .setting-reference-scroll{flex:0 0 auto;overflow:hidden;width:100%;max-width:100%}
+  .setting-reference-table{width:100%;height:auto!important;table-layout:fixed}
+  .setting-reference-table thead tr{height:25px}
+  .setting-reference-table tbody tr{height:25px}
+  .setting-reference-table th,.setting-reference-table td{height:25px!important;min-height:0!important;font-size:10px;line-height:1;padding:0}
+  .setting-reference-table thead .setting-col,.setting-reference-table tbody th{width:30px;font-size:9px}
+  .setting-reference-table .ref-icon{font-size:12px;transform:none}
 }

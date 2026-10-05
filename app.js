@@ -1,6 +1,6 @@
 let mobileSheetView='record';
 'use strict';
-const VERSION='0.1.11';
+const VERSION='0.1.12';
 // デプロイ後のWorker URLに変更してください。
 const SERVER_URL='https://strange-slot-online.naitoryo7110.workers.dev';
 const COMMON_PLAYER_NAME_KEY='boardgamePlayerName';
@@ -22,7 +22,7 @@ const SYMBOLS=[
  {id:'moon',name:'月',noteName:'月',icon:'🌙'}
 ];
 let roomId=null, token=null, state=null, ws=null, me=null, finalAnswerDraft=null, finalDraftSession=null;
-let yellowArmed=false, deleteMode=false, revealBusy=false, localTimer=null;
+let yellowArmed=false, deleteMode=false, revealBusy=false, localTimer=null, timerAnchor=null;
 let investigateReadyAckKey=null;
 // 抽選結果DOMは通常のstate再描画から分離する。再接続時だけlastDrawを1回復元する。
 let drawDisplaySession=null;
@@ -58,7 +58,7 @@ async function joinRoom(r,forcedName=null){const name=String(forcedName??getName
 async function fetchState(){if(!roomId||!token)return;state=await api(`/api/room/${roomId}/state?token=${encodeURIComponent(token)}`);onState(state)}
 function connectWs(){if(ws)try{ws.close()}catch{};const u=SERVER_URL.replace(/^http/,'ws')+`/api/room/${roomId}/ws?token=${encodeURIComponent(token)}`;ws=new WebSocket(u);ws.onmessage=ev=>{try{const m=JSON.parse(ev.data);if(m.type==='state')onState(m.state);if(m.type==='draw')onDraw(m)}catch{}};ws.onclose=()=>{if(roomId)setTimeout(connectWs,1300)}}
 function scheduleReconnect(){if(roomId&&(!ws||ws.readyState!==WebSocket.OPEN))setTimeout(()=>{if(roomId)connectWs()},250)}
-function onState(s){const prevSession=state?.gameSessionId;state=s;me=s.me;if(prevSession&&s.gameSessionId!==prevSession){notebooks={};finalAnswerDraft=null;finalDraftSession=null;drawDisplaySession=null;mobileSheetView='record';clearDrawDisplay()}if(s.gameSessionId&&s.phase!=='lobby'&&s.phase!=='empty'){const k='sss_saved_common_name_'+s.gameSessionId;if(!sessionStorage.getItem(k)){saveCommonNameOnActualStart(me?.name);sessionStorage.setItem(k,'1')}}if(s.phase!=='final_answer'){finalAnswerDraft=null;finalDraftSession=null}$('#phaseMini').textContent=`R${s.round||'-'} ${phaseLabel(s.phase)}`;if(s.phase==='lobby'){setView('lobbyView');renderLobby();drawDisplaySession=null;clearDrawDisplay()}else if(s.phase==='empty'){leaveLocal();return}else{setView('gameView');if(!Object.keys(notebooks).length){notebooks=loadNotes();ensureNotes()}renderGame();hydrateDrawDisplayOnce()}
+function onState(s){const prevSession=state?.gameSessionId;state=s;me=s.me;syncTimerAnchor(s);if(prevSession&&s.gameSessionId!==prevSession){notebooks={};finalAnswerDraft=null;finalDraftSession=null;drawDisplaySession=null;mobileSheetView='record';clearDrawDisplay()}if(s.gameSessionId&&s.phase!=='lobby'&&s.phase!=='empty'){const k='sss_saved_common_name_'+s.gameSessionId;if(!sessionStorage.getItem(k)){saveCommonNameOnActualStart(me?.name);sessionStorage.setItem(k,'1')}}if(s.phase!=='final_answer'){finalAnswerDraft=null;finalDraftSession=null}$('#phaseMini').textContent=`R${s.round||'-'} ${phaseLabel(s.phase)}`;if(s.phase==='lobby'){setView('lobbyView');renderLobby();drawDisplaySession=null;clearDrawDisplay()}else if(s.phase==='empty'){leaveLocal();return}else{setView('gameView');if(!Object.keys(notebooks).length){notebooks=loadNotes();ensureNotes()}renderGame();hydrateDrawDisplayOnce()}
 if(s.phase==='investigate_ready'){const key=`${s.gameSessionId||''}:${s.round}`;if(investigateReadyAckKey!==key){investigateReadyAckKey=key;action('ackInvestigateReady',{})}}else if(s.phase!=='investigate'){investigateReadyAckKey=null}
 startTimer()}
 function renderLobby(){$('#roomNo').textContent=String(roomId).replace('room','');$('#lobbyPlayers').innerHTML=state.players.map(p=>`<div class="player-card ${p.id===me.id?'me':''}"><b>${esc(p.name)}</b><span>${p.isHost?'HOST':''}</span></div>`).join('');const host=me.isHost;$('#hostSettings').classList.toggle('hidden',!host);if(host){if(lobbySettingsRoom!==roomId||!lobbySettingsDraft){lobbySettingsRoom=roomId;lobbySettingsDraft={investigateSec:state.settings.investigateSec,thinkingSec:state.settings.thinkingSec,finalThinkingSec:state.settings.finalThinkingSec};lobbySettingsDirty=false}if(!lobbySettingsDirty){lobbySettingsDraft={investigateSec:state.settings.investigateSec,thinkingSec:state.settings.thinkingSec,finalThinkingSec:state.settings.finalThinkingSec}}writeLobbySettingsDraft()}$('#autoRecordToggle').checked=localStorage.getItem('sss_auto_record')==='1'}
@@ -104,14 +104,22 @@ async function acknowledgeRoundEnd(){
  $('#roundEndModal').classList.add('hidden');
  try{await action('ackRoundEnd',{})}catch(e){toast(e.message);renderRoundTransition()}
 }
+function syncTimerAnchor(s){
+ if(!s||!['investigate','thinking'].includes(s.phase)||!Number.isFinite(Number(s.remainingMs))){timerAnchor=null;return}
+ timerAnchor={phase:s.phase,round:s.round,session:s.gameSessionId,remainingMs:Math.max(0,Number(s.remainingMs)),at:performance.now()}
+}
 function startTimer(){clearInterval(localTimer);const tick=()=>{
  if(!state){$('#timer').textContent='--:--';return}
  if(state.phase==='round_end'){$('#timer').textContent='確認待ち';return}
  if(state.phase==='investigate_ready'){$('#timer').textContent='開始待ち';return}
- if(!state.deadline){$('#timer').textContent='--:--';return}
- const ms=Math.max(0,Number(state.deadline)-Date.now()),sec=Math.ceil(ms/1000);
+ if(!['investigate','thinking'].includes(state.phase)){$('#timer').textContent='--:--';return}
+ if(!timerAnchor||timerAnchor.phase!==state.phase||timerAnchor.round!==state.round||timerAnchor.session!==state.gameSessionId){
+   const fallback=state.phase==='investigate'?Number(state.settings?.investigateSec||0):Number(state.round===4?state.settings?.finalThinkingSec:state.settings?.thinkingSec||0);
+   timerAnchor={phase:state.phase,round:state.round,session:state.gameSessionId,remainingMs:Math.max(0,fallback*1000),at:performance.now()}
+ }
+ const ms=Math.max(0,timerAnchor.remainingMs-(performance.now()-timerAnchor.at)),sec=Math.ceil(ms/1000);
  $('#timer').textContent=`${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`
-};tick();localTimer=setInterval(tick,250)}
+};tick();localTimer=setInterval(tick,200)}
 function openMove(){if(state.moveLocked)return;action('beginMove',{}).then(r=>{if(r?.ok)showMoveModal(r.available)})}
 function showMoveModal(av){$('#modalBody').innerHTML='<h3>移動先を選択</h3><div class="machine-select">'+['A','B','C','D','E','F'].map(m=>`<button class="machine-btn" data-m="${m}" ${av.includes(m)?'':'disabled'}>${m}${av.includes(m)?'':'<br>使用中'}</button>`).join('')+'</div>';$('#modal').classList.remove('hidden');$('#modalBody').querySelectorAll('[data-m]:not(:disabled)').forEach(b=>b.onclick=async()=>{await action('finishMove',{machine:b.dataset.m});closeModal()})}
 function closeModal(){if(state?.moveLocked&&state.moveLockId===me?.id)action('cancelMove',{});$('#modal').classList.add('hidden')}
