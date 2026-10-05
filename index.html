@@ -10,7 +10,7 @@
 <header id="topbar">
   <div class="top-left"></div>
   <div id="gameTitle">STRANGE SLOT SIMULATOR ONLINE</div>
-  <div class="top-right"><span id="phaseMini"></span><span>v0.1.2</span><button id="leaveBtn" class="danger hidden">退出</button></div>
+  <div class="top-right"><span id="phaseMini"></span><span>v0.1.5</span><button id="leaveBtn" class="danger hidden">退出</button></div>
 </header>
 <main>
 <section id="titleView" class="view active">
@@ -31,7 +31,6 @@
       <label>調査時間 <input id="investigateSec" type="number" min="30" max="900" step="10" value="240"> 秒</label>
       <label>シンキング <input id="thinkingSec" type="number" min="10" max="600" step="10" value="60"> 秒</label>
       <label>最終シンキング <input id="finalThinkingSec" type="number" min="10" max="900" step="10" value="120"> 秒</label>
-      <button id="saveSettingsBtn">設定保存</button>
       <button id="startBtn" class="primary">ゲーム開始</button>
       <button id="forceEndBtn" class="danger">強制終了</button>
       <button id="resetBtn" class="danger">ROOM初期化</button>
@@ -77,6 +76,27 @@
       </div>
       <div id="predictionRow" class="prediction-row"></div>
       <div id="notebook" class="notebook"></div>
+      <div class="setting-reference-wrap">
+        <div class="setting-reference-title">設定1～6 参考表</div>
+        <div class="setting-reference-note">各数字は20枚中の枚数。棒が長いほど出やすい。</div>
+        <div class="setting-reference-scroll">
+          <table class="setting-reference-table" aria-label="設定1から6のシンボル構成表">
+            <thead>
+              <tr><th class="symbol-col">シンボル</th><th>設定1</th><th>設定2</th><th>設定3</th><th>設定4</th><th>設定5</th><th>設定6</th></tr>
+            </thead>
+            <tbody>
+              <tr><th><span class="ref-icon">🔔</span><span>ベル</span></th><td data-v="1">1</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="2">2</td><td data-v="3">3</td><td data-v="3">3</td></tr>
+              <tr><th><span class="ref-icon">🍇</span><span>ブドウ</span></th><td data-v="6">6</td><td data-v="6">6</td><td data-v="5">5</td><td data-v="5">5</td><td data-v="4">4</td><td data-v="4">4</td></tr>
+              <tr><th><span class="ref-icon">🍒</span><span>チェリー</span></th><td data-v="4">4</td><td data-v="3">3</td><td data-v="5">5</td><td data-v="2">2</td><td data-v="3">3</td><td data-v="4">4</td></tr>
+              <tr><th><span class="ref-icon">🔔🍒</span><span>ベル＋チェリー</span></th><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td></tr>
+              <tr><th><span class="ref-icon">🍉</span><span>スイカ</span></th><td data-v="3">3</td><td data-v="4">4</td><td data-v="2">2</td><td data-v="5">5</td><td data-v="4">4</td><td data-v="3">3</td></tr>
+              <tr><th><span class="ref-icon">🔔🍉</span><span>ベル＋スイカ</span></th><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td></tr>
+              <tr><th><span class="ref-icon">☀️</span><span>太陽</span></th><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td></tr>
+              <tr><th><span class="ref-icon">🌙</span><span>月</span></th><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td><td data-v="1">1</td><td data-v="2">2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </aside>
   </div>
 </section>
