@@ -15,7 +15,7 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
 
 
 
-/* v0.1.8 notebook/reference layout */
+/* v0.1.9 notebook/reference layout */
 #rightPane{display:grid;grid-template-rows:auto auto minmax(118px,1fr) auto;align-content:stretch;gap:5px;min-height:0}
 .notebook-head,.prediction-row{margin-bottom:0}
 .notebook{height:auto;min-height:0;max-height:none;overflow:auto}
@@ -53,7 +53,7 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
 .round-end-modal{position:fixed;inset:0;z-index:95;background:#000b;display:flex;align-items:center;justify-content:center}.round-end-card{width:min(520px,90vw);background:#202936;border:1px solid #637891;border-radius:14px;padding:24px;text-align:center;box-shadow:0 16px 45px #0009}.round-end-message{font-size:clamp(24px,5vw,42px);font-weight:900;margin-bottom:22px}.round-end-card .big{min-width:140px}
 
 
-/* v0.1.8 reference visibility / sizing */
+/* v0.1.9 reference visibility / sizing */
 .setting-reference-table td.strong{background:#101720;color:#f8fbff}
 #rightPane{grid-template-rows:auto auto minmax(0,46%) minmax(230px,1fr);gap:5px}
 .notebook{align-self:start;width:100%;max-height:100%;}
@@ -76,4 +76,70 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
   .setting-reference-table thead th{height:auto;min-height:26px}
   .setting-reference-table thead .setting-col,.setting-reference-table tbody th{width:32px;font-size:9px}
   .setting-reference-table .ref-icon{font-size:13px;transform:none}
+}
+
+
+/* v0.1.9 mobile notebook/reference tabs */
+.sheet-tabs{display:flex;align-items:center;min-width:0}
+.sheet-tab{border:0;background:transparent;color:var(--text);padding:4px 6px;border-radius:6px;font-weight:900;white-space:nowrap}
+.sheet-tab.reference-tab{display:none}
+.record-panel{display:contents}
+
+@media(max-width:760px){
+  #gameLayout{grid-template-rows:82px minmax(0,1fr) 50%;}
+  #rightPane{display:grid;grid-template-rows:auto minmax(0,1fr);gap:3px;padding:4px;min-height:0;overflow:hidden}
+  .notebook-head{grid-template-columns:minmax(0,1fr) 66px 52px;gap:4px;margin:0;min-height:31px}
+  .sheet-tabs{gap:2px;overflow:visible}
+  .sheet-tab{display:block!important;font-size:11px;line-height:1;padding:6px 7px;border:1px solid #42536b;background:#18212c;color:#cbd5e1}
+  .sheet-tab.active{background:#2c5fae;color:#fff;border-color:#5d8bd5}
+  .record-panel{display:grid;grid-template-rows:auto minmax(0,1fr);gap:3px;min-height:0;overflow:hidden}
+  .prediction-row{margin:0;flex-wrap:nowrap;overflow-x:auto;min-height:30px}
+  .notebook{height:100%;min-height:0!important;max-height:none!important;overflow:auto;align-self:stretch}
+  .setting-reference-wrap{display:none;height:100%;min-height:0;margin:0;padding:4px;overflow:hidden}
+  #rightPane.show-reference .record-panel{display:none}
+  #rightPane.show-reference .setting-reference-wrap{display:flex}
+  #rightPane.show-reference #noteMachineSelect,#rightPane.show-reference #deleteModeBtn{visibility:hidden;pointer-events:none}
+  .setting-reference-title{font-size:12px;margin-bottom:2px}
+  .setting-reference-note{display:block;font-size:9px;margin-bottom:3px}
+  .setting-reference-scroll{min-height:0;overflow:auto}
+  .setting-reference-table{min-width:100%;height:100%}
+  .setting-reference-table th,.setting-reference-table td{min-height:28px;font-size:12px}
+  .setting-reference-table thead th{min-height:32px}
+  .setting-reference-table thead .setting-col,.setting-reference-table tbody th{width:34px;font-size:10px}
+  .setting-reference-table .ref-icon{font-size:15px}
+}
+
+/* v0.1.10 mobile draw result: size every card against the six-card maximum */
+@media(max-width:760px){
+  .draw-cards{
+    width:100%;
+    max-width:100%;
+    min-height:88px;
+    display:flex;
+    flex-wrap:nowrap;
+    justify-content:center;
+    align-items:center;
+    gap:4px;
+    overflow:visible;
+    padding:0 2px;
+  }
+  .draw-cards .slot-card{
+    flex:0 0 calc((100% - 20px) / 6);
+    width:calc((100% - 20px) / 6);
+    max-width:58px;
+    min-width:0;
+    height:auto;
+    aspect-ratio:2 / 3;
+    border-width:2px;
+    border-radius:7px;
+    padding:2px;
+    font-size:clamp(7px,2.25vw,10px);
+    line-height:1.05;
+    overflow:hidden;
+  }
+  .draw-cards .slot-card .icon{
+    font-size:clamp(20px,7.2vw,30px);
+    line-height:1;
+    margin-bottom:2px;
+  }
 }

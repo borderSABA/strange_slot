@@ -4,13 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>STRANGE SLOT SIMULATOR ONLINE</title>
-<link rel="stylesheet" href="style.css?v=0.1.8" />
+<link rel="stylesheet" href="style.css?v=0.1.10" />
 </head>
 <body>
 <header id="topbar">
   <div class="top-left"></div>
   <div id="gameTitle">STRANGE SLOT SIMULATOR ONLINE</div>
-  <div class="top-right"><span id="phaseMini"></span><span>v0.1.8</span><button id="leaveBtn" class="danger hidden">退出</button></div>
+  <div class="top-right"><span id="phaseMini"></span><span>v0.1.10</span><button id="leaveBtn" class="danger hidden">退出</button></div>
 </header>
 <main>
 <section id="titleView" class="view active">
@@ -70,13 +70,18 @@
 
     <aside id="rightPane">
       <div class="notebook-head">
-        <b>記録用紙</b>
+        <div class="sheet-tabs">
+          <button id="recordTabBtn" class="sheet-tab active" type="button">記録用紙</button>
+          <button id="referenceTabBtn" class="sheet-tab reference-tab" type="button">参考表</button>
+        </div>
         <select id="noteMachineSelect"></select>
         <button id="deleteModeBtn">削除</button>
       </div>
-      <div id="predictionRow" class="prediction-row"></div>
-      <div id="notebook" class="notebook"></div>
-      <div class="setting-reference-wrap">
+      <div id="recordPanel" class="record-panel">
+        <div id="predictionRow" class="prediction-row"></div>
+        <div id="notebook" class="notebook"></div>
+      </div>
+      <div id="referencePanel" class="setting-reference-wrap">
         <div class="setting-reference-title">設定1～6 参考表</div>
         <div class="setting-reference-note">各数字は20枚中の枚数</div>
         <div class="setting-reference-scroll">
@@ -120,6 +125,6 @@
 <div id="modal" class="modal hidden"><div class="modal-card"><div id="modalBody"></div><div class="modal-actions"><button id="modalClose">閉じる</button></div></div></div>
 <div id="toast" class="toast hidden"></div>
 <div id="bigPop" class="big-pop hidden"></div>
-<script src="app.js?v=0.1.8"></script>
+<script src="app.js?v=0.1.10"></script>
 </body>
 </html>
