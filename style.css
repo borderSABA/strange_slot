@@ -15,7 +15,7 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
 
 
 
-/* v0.1.7 notebook/reference layout */
+/* v0.1.8 notebook/reference layout */
 #rightPane{display:grid;grid-template-rows:auto auto minmax(118px,1fr) auto;align-content:stretch;gap:5px;min-height:0}
 .notebook-head,.prediction-row{margin-bottom:0}
 .notebook{height:auto;min-height:0;max-height:none;overflow:auto}
@@ -51,3 +51,29 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
 }
 
 .round-end-modal{position:fixed;inset:0;z-index:95;background:#000b;display:flex;align-items:center;justify-content:center}.round-end-card{width:min(520px,90vw);background:#202936;border:1px solid #637891;border-radius:14px;padding:24px;text-align:center;box-shadow:0 16px 45px #0009}.round-end-message{font-size:clamp(24px,5vw,42px);font-weight:900;margin-bottom:22px}.round-end-card .big{min-width:140px}
+
+
+/* v0.1.8 reference visibility / sizing */
+.setting-reference-table td.strong{background:#101720;color:#f8fbff}
+#rightPane{grid-template-rows:auto auto minmax(0,46%) minmax(230px,1fr);gap:5px}
+.notebook{align-self:start;width:100%;max-height:100%;}
+.setting-reference-wrap{min-height:0;height:100%;display:flex;flex-direction:column;padding:8px}
+.setting-reference-scroll{flex:1;display:flex;align-items:stretch;overflow:hidden}
+.setting-reference-table{height:100%}
+.setting-reference-table th,.setting-reference-table td{height:auto;min-height:30px;font-size:14px}
+.setting-reference-table thead th{height:auto;min-height:36px;font-size:15px}
+.setting-reference-table thead .setting-col{width:48px;font-size:11px}
+.setting-reference-table tbody th{width:48px;font-size:13px}
+.setting-reference-table .ref-icon{font-size:20px;transform:none}
+.setting-reference-title{font-size:14px;margin-bottom:2px}
+.setting-reference-note{font-size:10px;margin-bottom:5px}
+@media(max-width:760px){
+  #gameLayout{grid-template-rows:82px minmax(0,1fr) 48%}
+  #rightPane{grid-template-rows:auto auto minmax(0,43%) minmax(150px,1fr);gap:3px;padding:4px}
+  .setting-reference-wrap{padding:4px}
+  .setting-reference-title{font-size:10px}
+  .setting-reference-table th,.setting-reference-table td{height:auto;min-height:22px;font-size:10px}
+  .setting-reference-table thead th{height:auto;min-height:26px}
+  .setting-reference-table thead .setting-col,.setting-reference-table tbody th{width:32px;font-size:9px}
+  .setting-reference-table .ref-icon{font-size:13px;transform:none}
+}
