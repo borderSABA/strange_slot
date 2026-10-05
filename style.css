@@ -143,3 +143,74 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
     margin-bottom:2px;
   }
 }
+
+
+/* v0.1.11 mobile: prioritize full record sheet, shrink draw board */
+@media(max-width:760px){
+  #gameLayout{
+    grid-template-rows:70px minmax(150px,29%) minmax(0,1fr);
+    gap:3px;
+    padding:3px;
+  }
+  #leftPane{
+    grid-template-columns:1fr 1fr 82px 62px;
+    gap:3px;
+    padding:3px;
+  }
+  #leftPane .status-box,#leftPane .machine-current{padding:3px;font-size:10px;line-height:1.15}
+  #moveBtn,#memoBtn{padding:4px 2px;font-size:11px}
+  #centerPane{padding:3px;overflow:hidden}
+  .timer{font-size:22px;line-height:1.05;height:25px}
+  .draw-area{height:calc(100% - 25px);gap:3px;justify-content:space-evenly}
+  .draw-cards{min-height:62px;height:66px;gap:3px;padding:0 1px}
+  .draw-cards .slot-card{
+    flex-basis:calc((100% - 15px) / 6);
+    width:calc((100% - 15px) / 6);
+    max-width:44px;
+    aspect-ratio:2 / 3;
+    border-width:1px;
+    border-radius:5px;
+    padding:1px;
+    font-size:clamp(6px,1.8vw,8px);
+  }
+  .draw-cards .slot-card .icon{font-size:clamp(17px,5.6vw,23px);margin-bottom:0}
+  .controls{gap:6px;height:31px}
+  .controls button{padding:5px 8px;font-size:12px}
+  .controls .big{font-size:14px;padding:5px 16px}
+  .bonus-info{font-size:9px;line-height:1.1;min-height:11px}
+  .ticket-area,.machine-select{gap:4px;margin:2px auto}
+  .ticket{height:43px;font-size:17px}
+  .machine-btn{height:39px;font-size:15px}
+
+  #rightPane{
+    grid-template-rows:29px minmax(0,1fr);
+    gap:2px;
+    padding:3px;
+    overflow:hidden;
+  }
+  .notebook-head{min-height:29px;height:29px;grid-template-columns:minmax(0,1fr) 62px 48px;gap:3px}
+  .sheet-tab{font-size:10px;padding:5px 5px}
+  .notebook-head select{padding:2px;font-size:10px;height:27px}
+  #deleteModeBtn{padding:3px 2px;font-size:10px;height:27px}
+  .record-panel{grid-template-rows:27px minmax(0,1fr);gap:2px;height:100%;min-height:0}
+  .prediction-row{min-height:27px;height:27px;padding:1px 2px;overflow:hidden;flex-wrap:nowrap}
+  .prediction-row .pred{width:24px;height:23px;font-size:10px;flex:0 0 24px}
+  .notebook{
+    height:100%;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-x:auto;
+    overflow-y:hidden;
+  }
+  .note-grid{grid-template-columns:68px 36px repeat(var(--cols),29px)}
+  .note-cell,.note-head{height:27px;min-height:27px;font-size:9px}
+  .note-symbol{left:0;padding-left:3px;white-space:nowrap}
+  .note-total{left:68px}
+  .note-square span{font-size:12px}
+  .setting-reference-wrap{height:100%;min-height:0;padding:3px}
+  .setting-reference-scroll{overflow:hidden;min-height:0}
+  .setting-reference-table{height:100%;table-layout:fixed}
+  .setting-reference-table th,.setting-reference-table td{min-height:0;height:auto;font-size:11px}
+  .setting-reference-table thead th{min-height:0;height:auto}
+  .setting-reference-table .ref-icon{font-size:14px}
+}

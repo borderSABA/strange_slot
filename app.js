@@ -1,6 +1,6 @@
 let mobileSheetView='record';
 'use strict';
-const VERSION='0.1.7';
+const VERSION='0.1.11';
 // デプロイ後のWorker URLに変更してください。
 const SERVER_URL='https://strange-slot-online.naitoryo7110.workers.dev';
 const COMMON_PLAYER_NAME_KEY='boardgamePlayerName';
@@ -23,6 +23,7 @@ const SYMBOLS=[
 ];
 let roomId=null, token=null, state=null, ws=null, me=null, finalAnswerDraft=null, finalDraftSession=null;
 let yellowArmed=false, deleteMode=false, revealBusy=false, localTimer=null;
+let investigateReadyAckKey=null;
 // 抽選結果DOMは通常のstate再描画から分離する。再接続時だけlastDrawを1回復元する。
 let drawDisplaySession=null;
 // ロビー設定は保存せず、この画面で編集中のDraftだけ保持する。
@@ -51,13 +52,15 @@ async function loadRooms(){try{const d=await api('/api/rooms');const incoming=Ar
 function roomStatusLabel(r){if(r?.error)return '取得失敗';if(r?.status==='playing')return 'ゲーム中';if(r?.status==='finished')return '終了';return '待機中'}
 function renderRooms(rooms){const box=$('#rooms');box.innerHTML='';for(let i=1;i<=4;i++){const id=ROOM_IDS[i-1];const r=rooms.find(x=>x.id===id)||{id,players:[],status:'lobby',maxPlayers:5,error:true};const div=document.createElement('article');div.className='room'+(r.error?' error':'');div.innerHTML=`<h3>ROOM ${i}</h3><div class="state">${roomStatusLabel(r)}</div><div>${r.players?.length||0}/${r.maxPlayers||5}人</div><div class="names">参加者：${r.players?.length?esc(r.players.join(' / ')):'なし'}</div>${r.error?'<div class="fetch-error">前回取得情報を表示中</div>':''}<div class="room-actions"><button class="room-join" data-room="${id}">${r.players?.length?'参加する':'新規作成'}</button><button class="room-reset danger" data-reset="${id}">初期化</button></div>`;box.appendChild(div)}box.querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>joinRoom(b.dataset.room));box.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>resetEmptyRoom(b.dataset.reset))}
 async function resetEmptyRoom(id){const no=id.replace('room','');if(!confirm(`ROOM ${no} を初期化しますか？`))return;try{await api(`/reset-empty?roomId=${encodeURIComponent(id)}`,{method:'POST'});await loadRooms()}catch(e){toast(e.message)}}
-function phaseLabel(p){return ({empty:'空室',lobby:'待機中',ticket:'抽選券選択',machine_select:'台選択',investigate:'調査中',round_end:'ラウンド終了',thinking:'シンキング',final_answer:'最終回答',result:'結果'})[p]||p}
+function phaseLabel(p){return ({empty:'空室',lobby:'待機中',ticket:'抽選券選択',machine_select:'台選択',investigate_ready:'調査開始待ち',investigate:'調査中',round_end:'ラウンド終了',thinking:'シンキング',final_answer:'最終回答',result:'結果'})[p]||p}
 async function checkRoomJoin(r,name,t){const q=new URLSearchParams({roomId:r,name,token:t});return api(`/join-check?${q.toString()}`,{method:'GET'})}
 async function joinRoom(r,forcedName=null){const name=String(forcedName??getName()).trim();if(!name)return toast('名前を入力してください');const t=getOrCreateToken(r);try{await checkRoomJoin(r,name,t);const d=await api(`/api/room/${r}/join`,{method:'POST',body:JSON.stringify({name,token:t})});roomId=r;token=d.token||t;localStorage.setItem(sessionKey(r),token);localStorage.setItem(ACTIVE_ROOM_KEY,r);localStorage.setItem(ACTIVE_NAME_KEY,name);$('#nameInput').value=name;await fetchState();connectWs();$('#leaveBtn').classList.remove('hidden')}catch(e){toast(e.message)}}
 async function fetchState(){if(!roomId||!token)return;state=await api(`/api/room/${roomId}/state?token=${encodeURIComponent(token)}`);onState(state)}
 function connectWs(){if(ws)try{ws.close()}catch{};const u=SERVER_URL.replace(/^http/,'ws')+`/api/room/${roomId}/ws?token=${encodeURIComponent(token)}`;ws=new WebSocket(u);ws.onmessage=ev=>{try{const m=JSON.parse(ev.data);if(m.type==='state')onState(m.state);if(m.type==='draw')onDraw(m)}catch{}};ws.onclose=()=>{if(roomId)setTimeout(connectWs,1300)}}
 function scheduleReconnect(){if(roomId&&(!ws||ws.readyState!==WebSocket.OPEN))setTimeout(()=>{if(roomId)connectWs()},250)}
-function onState(s){const prevSession=state?.gameSessionId;state=s;me=s.me;if(prevSession&&s.gameSessionId!==prevSession){notebooks={};finalAnswerDraft=null;finalDraftSession=null;drawDisplaySession=null;mobileSheetView='record';clearDrawDisplay()}if(s.gameSessionId&&s.phase!=='lobby'&&s.phase!=='empty'){const k='sss_saved_common_name_'+s.gameSessionId;if(!sessionStorage.getItem(k)){saveCommonNameOnActualStart(me?.name);sessionStorage.setItem(k,'1')}}if(s.phase!=='final_answer'){finalAnswerDraft=null;finalDraftSession=null}$('#phaseMini').textContent=`R${s.round||'-'} ${phaseLabel(s.phase)}`;if(s.phase==='lobby'){setView('lobbyView');renderLobby();drawDisplaySession=null;clearDrawDisplay()}else if(s.phase==='empty'){leaveLocal();return}else{setView('gameView');if(!Object.keys(notebooks).length){notebooks=loadNotes();ensureNotes()}renderGame();hydrateDrawDisplayOnce()}startTimer()}
+function onState(s){const prevSession=state?.gameSessionId;state=s;me=s.me;if(prevSession&&s.gameSessionId!==prevSession){notebooks={};finalAnswerDraft=null;finalDraftSession=null;drawDisplaySession=null;mobileSheetView='record';clearDrawDisplay()}if(s.gameSessionId&&s.phase!=='lobby'&&s.phase!=='empty'){const k='sss_saved_common_name_'+s.gameSessionId;if(!sessionStorage.getItem(k)){saveCommonNameOnActualStart(me?.name);sessionStorage.setItem(k,'1')}}if(s.phase!=='final_answer'){finalAnswerDraft=null;finalDraftSession=null}$('#phaseMini').textContent=`R${s.round||'-'} ${phaseLabel(s.phase)}`;if(s.phase==='lobby'){setView('lobbyView');renderLobby();drawDisplaySession=null;clearDrawDisplay()}else if(s.phase==='empty'){leaveLocal();return}else{setView('gameView');if(!Object.keys(notebooks).length){notebooks=loadNotes();ensureNotes()}renderGame();hydrateDrawDisplayOnce()}
+if(s.phase==='investigate_ready'){const key=`${s.gameSessionId||''}:${s.round}`;if(investigateReadyAckKey!==key){investigateReadyAckKey=key;action('ackInvestigateReady',{})}}else if(s.phase!=='investigate'){investigateReadyAckKey=null}
+startTimer()}
 function renderLobby(){$('#roomNo').textContent=String(roomId).replace('room','');$('#lobbyPlayers').innerHTML=state.players.map(p=>`<div class="player-card ${p.id===me.id?'me':''}"><b>${esc(p.name)}</b><span>${p.isHost?'HOST':''}</span></div>`).join('');const host=me.isHost;$('#hostSettings').classList.toggle('hidden',!host);if(host){if(lobbySettingsRoom!==roomId||!lobbySettingsDraft){lobbySettingsRoom=roomId;lobbySettingsDraft={investigateSec:state.settings.investigateSec,thinkingSec:state.settings.thinkingSec,finalThinkingSec:state.settings.finalThinkingSec};lobbySettingsDirty=false}if(!lobbySettingsDirty){lobbySettingsDraft={investigateSec:state.settings.investigateSec,thinkingSec:state.settings.thinkingSec,finalThinkingSec:state.settings.finalThinkingSec}}writeLobbySettingsDraft()}$('#autoRecordToggle').checked=localStorage.getItem('sss_auto_record')==='1'}
 function writeLobbySettingsDraft(){if(!lobbySettingsDraft)return;$('#investigateSec').value=lobbySettingsDraft.investigateSec;$('#thinkingSec').value=lobbySettingsDraft.thinkingSec;$('#finalThinkingSec').value=lobbySettingsDraft.finalThinkingSec}
 function readLobbySettingsDraft(){return {investigateSec:+$('#investigateSec').value,thinkingSec:+$('#thinkingSec').value,finalThinkingSec:+$('#finalThinkingSec').value}}
@@ -104,6 +107,7 @@ async function acknowledgeRoundEnd(){
 function startTimer(){clearInterval(localTimer);const tick=()=>{
  if(!state){$('#timer').textContent='--:--';return}
  if(state.phase==='round_end'){$('#timer').textContent='確認待ち';return}
+ if(state.phase==='investigate_ready'){$('#timer').textContent='開始待ち';return}
  if(!state.deadline){$('#timer').textContent='--:--';return}
  const ms=Math.max(0,Number(state.deadline)-Date.now()),sec=Math.ceil(ms/1000);
  $('#timer').textContent=`${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`
