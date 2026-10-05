@@ -1,6 +1,6 @@
 let mobileSheetView='record';
 'use strict';
-const VERSION='0.1.12';
+const VERSION='0.1.13';
 // デプロイ後のWorker URLに変更してください。
 const SERVER_URL='https://strange-slot-online.naitoryo7110.workers.dev';
 const COMMON_PLAYER_NAME_KEY='boardgamePlayerName';
@@ -23,7 +23,6 @@ const SYMBOLS=[
 ];
 let roomId=null, token=null, state=null, ws=null, me=null, finalAnswerDraft=null, finalDraftSession=null;
 let yellowArmed=false, deleteMode=false, revealBusy=false, localTimer=null, timerAnchor=null;
-let investigateReadyAckKey=null;
 // 抽選結果DOMは通常のstate再描画から分離する。再接続時だけlastDrawを1回復元する。
 let drawDisplaySession=null;
 // ロビー設定は保存せず、この画面で編集中のDraftだけ保持する。
@@ -59,13 +58,12 @@ async function fetchState(){if(!roomId||!token)return;state=await api(`/api/room
 function connectWs(){if(ws)try{ws.close()}catch{};const u=SERVER_URL.replace(/^http/,'ws')+`/api/room/${roomId}/ws?token=${encodeURIComponent(token)}`;ws=new WebSocket(u);ws.onmessage=ev=>{try{const m=JSON.parse(ev.data);if(m.type==='state')onState(m.state);if(m.type==='draw')onDraw(m)}catch{}};ws.onclose=()=>{if(roomId)setTimeout(connectWs,1300)}}
 function scheduleReconnect(){if(roomId&&(!ws||ws.readyState!==WebSocket.OPEN))setTimeout(()=>{if(roomId)connectWs()},250)}
 function onState(s){const prevSession=state?.gameSessionId;state=s;me=s.me;syncTimerAnchor(s);if(prevSession&&s.gameSessionId!==prevSession){notebooks={};finalAnswerDraft=null;finalDraftSession=null;drawDisplaySession=null;mobileSheetView='record';clearDrawDisplay()}if(s.gameSessionId&&s.phase!=='lobby'&&s.phase!=='empty'){const k='sss_saved_common_name_'+s.gameSessionId;if(!sessionStorage.getItem(k)){saveCommonNameOnActualStart(me?.name);sessionStorage.setItem(k,'1')}}if(s.phase!=='final_answer'){finalAnswerDraft=null;finalDraftSession=null}$('#phaseMini').textContent=`R${s.round||'-'} ${phaseLabel(s.phase)}`;if(s.phase==='lobby'){setView('lobbyView');renderLobby();drawDisplaySession=null;clearDrawDisplay()}else if(s.phase==='empty'){leaveLocal();return}else{setView('gameView');if(!Object.keys(notebooks).length){notebooks=loadNotes();ensureNotes()}renderGame();hydrateDrawDisplayOnce()}
-if(s.phase==='investigate_ready'){const key=`${s.gameSessionId||''}:${s.round}`;if(investigateReadyAckKey!==key){investigateReadyAckKey=key;action('ackInvestigateReady',{})}}else if(s.phase!=='investigate'){investigateReadyAckKey=null}
 startTimer()}
 function renderLobby(){$('#roomNo').textContent=String(roomId).replace('room','');$('#lobbyPlayers').innerHTML=state.players.map(p=>`<div class="player-card ${p.id===me.id?'me':''}"><b>${esc(p.name)}</b><span>${p.isHost?'HOST':''}</span></div>`).join('');const host=me.isHost;$('#hostSettings').classList.toggle('hidden',!host);if(host){if(lobbySettingsRoom!==roomId||!lobbySettingsDraft){lobbySettingsRoom=roomId;lobbySettingsDraft={investigateSec:state.settings.investigateSec,thinkingSec:state.settings.thinkingSec,finalThinkingSec:state.settings.finalThinkingSec};lobbySettingsDirty=false}if(!lobbySettingsDirty){lobbySettingsDraft={investigateSec:state.settings.investigateSec,thinkingSec:state.settings.thinkingSec,finalThinkingSec:state.settings.finalThinkingSec}}writeLobbySettingsDraft()}$('#autoRecordToggle').checked=localStorage.getItem('sss_auto_record')==='1'}
 function writeLobbySettingsDraft(){if(!lobbySettingsDraft)return;$('#investigateSec').value=lobbySettingsDraft.investigateSec;$('#thinkingSec').value=lobbySettingsDraft.thinkingSec;$('#finalThinkingSec').value=lobbySettingsDraft.finalThinkingSec}
 function readLobbySettingsDraft(){return {investigateSec:+$('#investigateSec').value,thinkingSec:+$('#thinkingSec').value,finalThinkingSec:+$('#finalThinkingSec').value}}
 function markLobbySettingsDirty(){if(!me?.isHost)return;lobbySettingsDraft=readLobbySettingsDraft();lobbySettingsDirty=true}
-function renderGame(){renderPlayers();$('#roundInfo').innerHTML=`<b>ラウンド ${state.round}/4</b><br>${phaseLabel(state.phase)}${state.selectTurnName?`<br>選択：${esc(state.selectTurnName)}`:''}`;$('#machineBox').innerHTML=`現在台：<b>${me.machine||'なし'}</b>${me.ticket!=null?`<br>抽選券：${me.ticket}`:''}`;$('#moveBtn').disabled=state.phase!=='investigate'||!me.machine||state.moveLocked;$('#moveBtn').textContent=state.moveLocked?`${state.moveLockName||'誰か'}が台移動中`:'台移動';renderTicket();renderMachineSelect();renderDrawControls();renderNotebook();renderSheetTabs();renderRoundTransition();renderFinalAnswer();renderResult()}
+function renderGame(){renderPlayers();$('#roundInfo').innerHTML=`<b>ラウンド ${state.round}/4</b><br>${phaseLabel(state.phase)}${state.selectTurnName?`<br>選択：${esc(state.selectTurnName)}`:''}`;$('#machineBox').innerHTML=`現在台：<b>${me.machine||'なし'}</b>${me.ticket!=null?`<br>抽選券：${me.ticket}`:''}`;$('#moveBtn').disabled=state.phase!=='investigate'||!me.machine||state.moveLocked;$('#moveBtn').textContent=state.moveLocked?`${state.moveLockName||'誰か'}が台移動中`:'台移動';renderTicket();renderMachineSelect();renderDrawControls();renderNotebook();renderSheetTabs();renderInvestigateReady();renderRoundTransition();renderFinalAnswer();renderResult()}
 function renderPlayers(){const h=state.players.map(p=>`<div class="player-card ${p.id===me.id?'me':''} ${p.red?'red':''}"><b>${esc(p.name)}</b><span>🔔${p.publicBell}　🟡${p.publicYellow}${p.red?'　🔴':''}</span></div>`).join('');$('#playersGame').innerHTML=h}
 function renderTicket(){const a=$('#ticketArea');a.classList.toggle('hidden',state.phase!=='ticket');if(state.phase!=='ticket')return;if(me.ticketChosen){a.innerHTML='<div style="grid-column:1/-1;text-align:center">全員の選択を待っています…</div>';return}a.innerHTML=state.ticketSlots.map((_,i)=>`<button class="ticket" data-i="${i}">?</button>`).join('');a.querySelectorAll('button').forEach(b=>b.onclick=()=>action('pickTicket',{slot:+b.dataset.i}))}
 function renderMachineSelect(){const a=$('#machineSelectArea');const initial=state.phase==='machine_select';const rejoin=state.phase==='investigate'&&!me.machine&&state.rejoinSelectTurnId;const on=initial||rejoin;a.classList.toggle('hidden',!on);if(!on)return;const mine=initial?state.selectTurnId===me.id:state.rejoinSelectTurnId===me.id;const waitingName=initial?state.selectTurnName:state.rejoinSelectTurnName;const occ=new Map(state.players.filter(p=>p.machine).map(p=>[p.machine,p.name]));a.innerHTML=`<div style="grid-column:1/-1;text-align:center">${mine?(rejoin?'再入場：台を選んでください':'台を選んでください'):`${esc(waitingName||'')} の選択待ち`}</div>`+['A','B','C','D','E','F'].map(m=>`<button class="machine-btn ${occ.has(m)?'occupied':''}" data-m="${m}" ${!mine||occ.has(m)?'disabled':''}>${m}${occ.has(m)?`<br>${esc(occ.get(m))}使用中`:''}</button>`).join('');a.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>action(rejoin?'selectRejoinMachine':'selectMachine',{machine:b.dataset.m}))}
@@ -93,7 +91,24 @@ function renderFinalAnswer(){const a=$('#finalAnswerArea');a.classList.toggle('h
 function checkDupAnswers(){const vals=[...$('#finalAnswerArea').querySelectorAll('select')].map(s=>s.value).filter(Boolean);const dup=new Set(vals.filter((v,i,a)=>a.indexOf(v)!==i));$('#finalAnswerArea').querySelectorAll('.answer-row').forEach(r=>r.classList.toggle('dup',dup.has(r.querySelector('select').value)));return dup.size===0&&vals.length===6}
 async function submitFinal(){if(!checkDupAnswers())return toast('設定1～6を1回ずつ選んでください');const answer={};$('#finalAnswerArea').querySelectorAll('select').forEach(s=>answer[s.dataset.m]=+s.value);const r=await action('finalAnswer',{answer});if(r?.ok)finalAnswerDraft={...answer}}
 function renderResult(){const a=$('#resultArea');a.classList.toggle('hidden',state.phase!=='result');if(state.phase!=='result')return;const mine=state.results?.find(x=>x.id===me.id);a.innerHTML=`<h2>RESULT</h2><h1>${mine?.score??0} / 6 点</h1><table><tr><th>台</th><th>正解</th><th>回答</th></tr>${['A','B','C','D','E','F'].map(m=>`<tr class="${mine?.answer?.[m]===state.solution?.[m]?'correct':'wrong'}"><td>${m}</td><td>設定${state.solution?.[m]}</td><td>${mine?.answer?.[m]?`設定${mine.answer[m]}`:'-'}</td></tr>`).join('')}</table><h3>${(state.winners||[]).map(esc).join(' / ')} 勝利</h3>${me.isHost?'<button id="backLobby" class="primary">ロビーへ戻る</button>':''}`;$('#backLobby')?.addEventListener('click',()=>action('backLobby',{}))}
-async function action(type,payload={}){try{const commonTypes=new Set(['settings','start','reset']);const actionId=commonTypes.has(type)?newActionId(type):undefined;return await api(`/api/room/${roomId}/action`,{method:'POST',body:JSON.stringify({token,type,...payload,...(actionId?{actionId}:{})})})}catch(e){toast(e.message)}}
+async function action(type,payload={}){try{const commonTypes=new Set(['settings','start','startInvestigate','reset']);const actionId=commonTypes.has(type)?newActionId(type):undefined;return await api(`/api/room/${roomId}/action`,{method:'POST',body:JSON.stringify({token,type,...payload,...(actionId?{actionId}:{})})})}catch(e){toast(e.message)}}
+
+function renderInvestigateReady(){
+ const modal=$('#investigateReadyModal');
+ if(!state||state.phase!=='investigate_ready'){modal.classList.add('hidden');return}
+ $('#investigateReadyMessage').textContent=`ラウンド${state.round}：全員の台選択が完了しました`;
+ const btn=$('#investigateStartBtn');
+ const wait=$('#investigateReadyWait');
+ if(me?.isHost){btn.classList.remove('hidden');wait.classList.add('hidden');btn.disabled=false}else{btn.classList.add('hidden');wait.classList.remove('hidden')}
+ modal.classList.remove('hidden');
+}
+async function startInvestigation(){
+ const btn=$('#investigateStartBtn');
+ btn.disabled=true;
+ const r=await action('startInvestigate',{});
+ if(!r?.ok&&state?.phase==='investigate_ready')btn.disabled=false;
+}
+
 function renderRoundTransition(){
  const modal=$('#roundEndModal');
  if(!state||state.phase!=='round_end'||me?.roundEndAcked||revealBusy){modal.classList.add('hidden');return}
@@ -133,7 +148,7 @@ $('#resetBtn').onclick=()=>confirm('ROOMを完全に初期化しますか？')&&
 $('#leaveBtn').onclick=leave;
 $('#moveBtn').onclick=openMove;
 $('#memoBtn').onclick=openMemo;
-$('#modalClose').onclick=closeModal;$('#roundEndOk').onclick=acknowledgeRoundEnd;
+$('#modalClose').onclick=closeModal;$('#roundEndOk').onclick=acknowledgeRoundEnd;$('#investigateStartBtn').onclick=startInvestigation;
 $('#deleteModeBtn').onclick=()=>{deleteMode=!deleteMode;renderNotebook()};
 $('#recordTabBtn').onclick=()=>setSheetView('record');
 $('#referenceTabBtn').onclick=()=>setSheetView('reference');

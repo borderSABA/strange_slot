@@ -4,13 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>STRANGE SLOT SIMULATOR ONLINE</title>
-<link rel="stylesheet" href="style.css?v=0.1.12" />
+<link rel="stylesheet" href="style.css?v=0.1.13" />
 </head>
 <body>
 <header id="topbar">
   <div class="top-left"></div>
   <div id="gameTitle">STRANGE SLOT SIMULATOR ONLINE</div>
-  <div class="top-right"><span id="phaseMini"></span><span>v0.1.12</span><button id="leaveBtn" class="danger hidden">退出</button></div>
+  <div class="top-right"><span id="phaseMini"></span><span>v0.1.13</span><button id="leaveBtn" class="danger hidden">退出</button></div>
 </header>
 <main>
 <section id="titleView" class="view active">
@@ -116,6 +116,14 @@
 </main>
 
 
+<div id="investigateReadyModal" class="round-end-modal hidden">
+  <div class="round-end-card">
+    <div id="investigateReadyMessage" class="round-end-message"></div>
+    <button id="investigateStartBtn" class="primary big">調査開始</button>
+    <div id="investigateReadyWait" class="hidden">ホストの調査開始を待っています…</div>
+  </div>
+</div>
+
 <div id="roundEndModal" class="round-end-modal hidden">
   <div class="round-end-card">
     <div id="roundEndMessage" class="round-end-message"></div>
@@ -125,6 +133,6 @@
 <div id="modal" class="modal hidden"><div class="modal-card"><div id="modalBody"></div><div class="modal-actions"><button id="modalClose">閉じる</button></div></div></div>
 <div id="toast" class="toast hidden"></div>
 <div id="bigPop" class="big-pop hidden"></div>
-<script src="app.js?v=0.1.12"></script>
+<script src="app.js?v=0.1.13"></script>
 </body>
 </html>
