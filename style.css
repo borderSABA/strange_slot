@@ -318,7 +318,7 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
  .rp-head,.rp-name,.rp-cell{padding:5px 2px;font-size:10px}.rp-cell{font-size:13px}
 }
 
-/* v0.1.17 mobile: trim unused record-sheet vertical space and give it to the draw board */
+/* v0.1.18 mobile: trim unused record-sheet vertical space and give it to the draw board */
 @media(max-width:760px){
   #gameLayout{
     grid-template-rows:62px 170px minmax(0,1fr);
@@ -370,4 +370,41 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
     overflow-x:auto;
     overflow-y:hidden;
   }
+}
+\n
+/* v0.1.18 ticket seat-order selection / reveal */
+.ticket-area{perspective:900px}
+.ticket-guide{grid-column:1/-1;text-align:center;font-weight:900;min-height:22px}
+.ticket-card{padding:0;background:transparent;border:0;perspective:900px}
+.ticket-card:disabled{opacity:1}
+.ticket-inner{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform .85s ease}
+.ticket-card.revealed .ticket-inner{transform:rotateY(180deg)}
+.ticket-front,.ticket-back{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:1px solid #50627a;border-radius:8px;backface-visibility:hidden;background:#172231;color:#fff}
+.ticket-front b,.ticket-back b{font-size:28px}.ticket-front small,.ticket-back small{font-size:11px;font-weight:800;max-width:95%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ticket-card.picked .ticket-front{border-color:#d7b24a;box-shadow:inset 0 0 0 1px #d7b24a}
+.ticket-back{transform:rotateY(180deg);background:#f2e7c6;color:#211c14;border-color:#b09149}
+
+/* v0.1.18 result stays in the card board while predictions remain visible */
+.result{height:100%;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;margin:0 auto;padding:12px;overflow:auto}
+.winner-banner{font-size:clamp(28px,5vw,54px);font-weight:1000;text-align:center}
+.score-list{display:grid;grid-template-columns:minmax(130px,1fr) 90px;width:min(520px,100%);border:1px solid #45576f;border-radius:10px;overflow:hidden}
+.score-head,.score-name,.score-value{padding:10px;border-right:1px solid #45576f;border-bottom:1px solid #45576f}.score-head{font-weight:900;background:#202d3c}.score-value{text-align:center;font-weight:900}.score-name.winner,.score-value.winner{font-weight:1000;background:#233d2d}
+
+@media(max-width:760px){
+  .ticket-guide{font-size:11px;min-height:16px}
+  .ticket-front b,.ticket-back b{font-size:17px}.ticket-front small,.ticket-back small{font-size:8px}
+  /* Final answer must be fully operable on a phone. */
+  body.final-thinking-mode #gameLayout{grid-template-rows:52px minmax(0,1fr) 30%;}
+  body.final-thinking-mode #centerPane{overflow:hidden;padding:3px}
+  body.final-thinking-mode #timer{font-size:22px;line-height:25px;height:25px}
+  body.final-thinking-mode #finalAnswerArea{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(0,1fr);gap:3px;height:calc(100% - 27px);max-width:none;margin:0;padding:2px;overflow:hidden;align-content:stretch}
+  body.final-thinking-mode #finalAnswerArea.hidden{display:none!important}
+  body.final-thinking-mode #finalAnswerArea h2,body.final-thinking-mode #finalAnswerArea p{grid-column:1/-1;margin:0;line-height:1.15}
+  body.final-thinking-mode #finalAnswerArea h2{font-size:14px}
+  body.final-thinking-mode #finalAnswerArea p{font-size:8px}
+  body.final-thinking-mode .answer-row{margin:0;grid-template-columns:34px 1fr;gap:2px;align-items:center;min-height:0}
+  body.final-thinking-mode .answer-row b{font-size:10px}
+  body.final-thinking-mode .answer-row select{height:30px;padding:2px;font-size:11px;min-width:0;width:100%}
+  body.result-mode #gameLayout{grid-template-rows:52px minmax(0,1fr) 34%;}
+  .winner-banner{font-size:24px}.score-list{grid-template-columns:minmax(100px,1fr) 64px}.score-head,.score-name,.score-value{padding:6px;font-size:11px}
 }
