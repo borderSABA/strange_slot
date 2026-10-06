@@ -68,17 +68,20 @@ function renderGame(){document.body.classList.toggle('final-thinking-mode',state
 
 function renderEarlyFinalButton(){
  const b=$('#earlyFinalBtn');
+ const top=$('#earlyFinalTopBtn');
  const allowed=['machine_select','investigate_ready','investigate','round_end','thinking'].includes(state?.phase);
- b.classList.toggle('hidden',!(me?.isHost&&allowed));
+ const show=!!(me?.isHost&&allowed);
+ b.classList.toggle('hidden',!show);
  b.disabled=false;
+ if(top){top.classList.toggle('hidden',!show);top.disabled=false;}
 }
 async function goEarlyFinalThinking(){
  if(!me?.isHost)return;
  if(!confirm('最終シンキングタイムへ移りますか？'))return;
- const b=$('#earlyFinalBtn');
- b.disabled=true;
+ const b=$('#earlyFinalBtn'),top=$('#earlyFinalTopBtn');
+ b.disabled=true;if(top)top.disabled=true;
  const r=await action('goFinalThinkingReady',{});
- if(!r?.ok)b.disabled=false;
+ if(!r?.ok){b.disabled=false;if(top)top.disabled=false;}
 }
 
 function renderPhaseModals(){
@@ -205,7 +208,7 @@ $('#resetBtn').onclick=()=>confirm('ROOMを完全に初期化しますか？')&&
 $('#leaveBtn').onclick=leave;
 $('#moveBtn').onclick=openMove;
 $('#memoBtn').onclick=openMemo;
-$('#earlyFinalBtn').onclick=goEarlyFinalThinking;
+$('#earlyFinalBtn').onclick=goEarlyFinalThinking;$('#earlyFinalTopBtn').onclick=goEarlyFinalThinking;
 $('#modalClose').onclick=closeModal;$('#roundEndOk').onclick=acknowledgeRoundEnd;$('#investigateStartBtn').onclick=startInvestigation;$('#finalThinkingStartBtn').onclick=startFinalThinking;$('#answerRevealStartBtn').onclick=startAnswerReveal;
 $('#deleteModeBtn').onclick=()=>{deleteMode=!deleteMode;renderNotebook()};
 $('#recordTabBtn').onclick=()=>setSheetView('record');
