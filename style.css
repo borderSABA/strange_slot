@@ -317,3 +317,57 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
  .reveal-pred-grid{grid-template-columns:minmax(62px,1.3fr) repeat(6,minmax(30px,1fr))}
  .rp-head,.rp-name,.rp-cell{padding:5px 2px;font-size:10px}.rp-cell{font-size:13px}
 }
+
+/* v0.1.17 mobile: trim unused record-sheet vertical space and give it to the draw board */
+@media(max-width:760px){
+  #gameLayout{
+    grid-template-rows:62px 170px minmax(0,1fr);
+  }
+
+  /* Larger draw board while still sizing cards against the six-card maximum. */
+  .draw-area{
+    height:calc(100% - 23px);
+    gap:4px;
+    justify-content:center;
+  }
+  .draw-cards{
+    height:84px;
+    min-height:84px;
+    gap:3px;
+    padding:0 1px;
+    align-items:center;
+  }
+  .draw-cards .slot-card{
+    flex-basis:calc((100% - 15px)/6);
+    width:calc((100% - 15px)/6);
+    max-width:52px;
+    height:78px;
+    border-radius:6px;
+    padding:2px 1px;
+    font-size:7px;
+  }
+  .draw-cards .slot-card .icon{
+    font-size:24px;
+    line-height:1;
+    margin:0 0 2px;
+  }
+  .controls{height:28px;gap:5px}
+  .controls button{height:28px;padding:2px 7px;font-size:10px}
+  .controls .big{font-size:12px;padding:2px 14px}
+  .bonus-info{height:11px;min-height:11px;font-size:8px;line-height:11px}
+
+  /* The record area now gets only the height it actually needs; no vertical scrolling. */
+  #rightPane{
+    min-height:0;
+    overflow:hidden;
+  }
+  .record-panel{
+    min-height:0;
+    overflow:hidden;
+  }
+  .notebook{
+    min-height:0!important;
+    overflow-x:auto;
+    overflow-y:hidden;
+  }
+}

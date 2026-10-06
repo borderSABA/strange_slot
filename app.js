@@ -1,6 +1,6 @@
 let mobileSheetView='record';
 'use strict';
-const VERSION='0.1.15';
+const VERSION='0.1.17';
 // デプロイ後のWorker URLに変更してください。
 const SERVER_URL='https://strange-slot-online.naitoryo7110.workers.dev';
 const COMMON_PLAYER_NAME_KEY='boardgamePlayerName';
@@ -129,13 +129,21 @@ async function startInvestigation(){
 
 function renderRoundTransition(){
  const modal=$('#roundEndModal');
- if(!state||state.phase!=='round_end'||me?.roundEndAcked||revealBusy){modal.classList.add('hidden');return}
+ if(!state||state.phase!=='round_end'||revealBusy){modal.classList.add('hidden');return}
  $('#roundEndMessage').textContent=`ラウンド${state.round}終了、シンキングタイムへ`;
+ const btn=$('#roundEndOk'),wait=$('#roundEndWait');
+ if(me?.isHost){btn.classList.remove('hidden');wait.classList.add('hidden');btn.disabled=false}
+ else{btn.classList.add('hidden');wait.classList.remove('hidden')}
  modal.classList.remove('hidden');
 }
 async function acknowledgeRoundEnd(){
- $('#roundEndModal').classList.add('hidden');
- try{await action('ackRoundEnd',{})}catch(e){toast(e.message);renderRoundTransition()}
+ if(!me?.isHost)return;
+ const b=$('#roundEndOk');
+ b.disabled=true;
+ try{
+  const r=await action('ackRoundEnd',{});
+  if(!r?.ok&&state?.phase==='round_end')b.disabled=false;
+ }catch(e){b.disabled=false;toast(e.message);renderRoundTransition()}
 }
 function syncTimerAnchor(s){
  if(!s||!['investigate','thinking','final_thinking'].includes(s.phase)||!Number.isFinite(Number(s.remainingMs))){timerAnchor=null;return}
