@@ -4,13 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>STRANGE SLOT SIMULATOR ONLINE</title>
-<link rel="stylesheet" href="style.css?v=0.1.21" />
+<link rel="stylesheet" href="style.css?v=0.1.22" />
 </head>
 <body>
 <header id="topbar">
   <div class="top-left"><button id="earlyFinalTopBtn" class="primary hidden" type="button">最終シンキングへ</button></div>
   <div id="gameTitle">STRANGE SLOT SIMULATOR ONLINE</div>
-  <div class="top-right"><span id="phaseMini"></span><span>v0.1.21</span><button id="leaveBtn" class="danger hidden">退出</button></div>
+  <div class="top-right"><span id="phaseMini"></span><span>v0.1.22</span><button id="leaveBtn" class="danger hidden">退出</button></div>
 </header>
 <main>
 <section id="titleView" class="view active">
@@ -28,16 +28,17 @@
     <div class="panel-title">ROOM <span id="roomNo"></span> ロビー</div>
     <div id="lobbyPlayers" class="player-list"></div>
     <div id="hostSettings" class="settings hidden">
-      <label>調査時間 <input id="investigateSec" type="number" min="30" max="900" step="10" value="240"> 秒</label>
-      <label>シンキング <input id="thinkingSec" type="number" min="10" max="600" step="10" value="60"> 秒</label>
-      <label>最終シンキング <input id="finalThinkingSec" type="number" min="10" max="900" step="10" value="120"> 秒</label>
+      <label class="setting-line"><span>調査時間</span><span><input id="investigateSec" type="number" min="30" max="900" step="10" value="240"> 秒</span></label>
+      <label class="setting-line"><span>シンキング</span><span><input id="thinkingSec" type="number" min="10" max="600" step="10" value="60"> 秒</span></label>
+      <label class="setting-line"><span>最終シンキング</span><span><input id="finalThinkingSec" type="number" min="10" max="900" step="10" value="120"> 秒</span></label>
+      <label class="setting-line"><span>ラウンド</span><span><input id="roundCount" type="number" min="1" max="20" step="1" value="4"> R</span></label>
+      <label class="setting-line mode-line"><span>モード</span><select id="gameMode"><option value="normal">通常</option><option value="coop">協力</option></select></label>
       <button id="startBtn" class="primary">ゲーム開始</button>
       <button id="forceEndBtn" class="danger">強制終了</button>
       <button id="resetBtn" class="danger">ROOM初期化</button>
     </div>
     <div class="personal-setting">
       <label class="switchrow"><input id="autoRecordToggle" type="checkbox"> 出目を自動記録</label>
-      <span>OFF時は原作寄りの手動記録です。</span>
     </div>
   </div>
 </section>
@@ -152,6 +153,6 @@
 <div id="modal" class="modal hidden"><div class="modal-card"><div id="modalBody"></div><div class="modal-actions"><button id="modalClose">閉じる</button></div></div></div>
 <div id="toast" class="toast hidden"></div>
 <div id="bigPop" class="big-pop hidden"></div>
-<script src="app.js?v=0.1.21"></script>
+<script src="app.js?v=0.1.22"></script>
 </body>
 </html>

@@ -415,3 +415,14 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
   #leftPane #earlyFinalBtn{display:none!important}
   #topbar .top-left{min-width:0}
 }
+
+/* v0.1.22 lobby settings: keep label/value on one line */
+.settings{grid-template-columns:repeat(2,minmax(0,1fr));}
+.settings .setting-line{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;min-height:38px;background:#151b23;border:1px solid var(--line);border-radius:7px;padding:5px 8px;}
+.settings .setting-line input{width:88px;text-align:right;}
+.settings .setting-line select{min-width:110px;background:#10151c;color:#fff;border:1px solid #4a596b;border-radius:6px;padding:6px;}
+.settings .mode-line{grid-column:span 2;}
+.reveal-pred-grid .coop-row{font-weight:800;background:rgba(255,255,255,.09);}
+@media(max-width:760px){.settings{grid-template-columns:1fr}.settings .mode-line{grid-column:auto}.settings .setting-line{min-height:34px}.settings .setting-line input{width:82px}}
+
+.mode-badge{display:inline-block;margin-left:5px;padding:1px 5px;border:1px solid var(--line);border-radius:999px;font-size:.78em;vertical-align:1px;}
