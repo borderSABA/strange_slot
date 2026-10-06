@@ -291,3 +291,29 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
   .setting-reference-table thead .setting-col,.setting-reference-table tbody th{width:30px;font-size:9px}
   .setting-reference-table .ref-icon{font-size:12px;transform:none}
 }
+
+
+/* v0.1.14 final thinking / answer reveal */
+.answer-reveal-board{width:min(760px,100%);margin:auto;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:12px}
+.answer-reveal-card{padding:0;border:0;background:transparent;perspective:900px;aspect-ratio:2/3;min-width:0}
+.answer-reveal-card:disabled{opacity:1;cursor:default}
+.reveal-card-inner{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1s ease}
+.answer-reveal-card.flipped .reveal-card-inner{transform:rotateY(180deg)}
+.reveal-card-front,.reveal-card-back{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border:2px solid #718096;border-radius:10px;backface-visibility:hidden;font-weight:900;font-size:clamp(24px,4vw,48px);background:#18212c;color:#fff;box-shadow:0 5px 16px #0006}
+.reveal-card-back{transform:rotateY(180deg);background:#f4e8c8;color:#201b12;border-color:#ad9251;font-size:clamp(18px,3vw,36px)}
+.reveal-predictions{height:100%;min-height:0;overflow:auto;padding:8px}
+.reveal-pred-title{font-weight:900;font-size:16px;margin-bottom:8px;text-align:center}
+.reveal-pred-grid{display:grid;grid-template-columns:minmax(90px,1.5fr) repeat(6,minmax(38px,1fr));border:1px solid #42536b;border-radius:8px;overflow:hidden}
+.rp-head,.rp-name,.rp-cell{padding:8px 5px;border-right:1px solid #42536b;border-bottom:1px solid #42536b;text-align:center;min-width:0}
+.rp-head{font-weight:900;background:#202d3c}.rp-name{font-weight:800;text-align:left}.rp-cell{font-size:18px;font-weight:900}
+#rightPane.reveal-mode{display:block!important;overflow:hidden}
+#rightPane.reveal-mode .notebook-head,#rightPane.reveal-mode .record-panel,#rightPane.reveal-mode .setting-reference-wrap{display:none!important}
+#rightPane.reveal-mode .reveal-predictions{display:block!important}
+@media(max-width:760px){
+ .answer-reveal-board{grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;padding:4px}
+ .reveal-card-front{font-size:22px;border-radius:6px}.reveal-card-back{font-size:12px;border-radius:6px}
+ .reveal-predictions{padding:3px;overflow:auto}
+ .reveal-pred-title{font-size:11px;margin-bottom:3px}
+ .reveal-pred-grid{grid-template-columns:minmax(62px,1.3fr) repeat(6,minmax(30px,1fr))}
+ .rp-head,.rp-name,.rp-cell{padding:5px 2px;font-size:10px}.rp-cell{font-size:13px}
+}

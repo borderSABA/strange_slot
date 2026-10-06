@@ -4,13 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>STRANGE SLOT SIMULATOR ONLINE</title>
-<link rel="stylesheet" href="style.css?v=0.1.13" />
+<link rel="stylesheet" href="style.css?v=0.1.15" />
 </head>
 <body>
 <header id="topbar">
   <div class="top-left"></div>
   <div id="gameTitle">STRANGE SLOT SIMULATOR ONLINE</div>
-  <div class="top-right"><span id="phaseMini"></span><span>v0.1.13</span><button id="leaveBtn" class="danger hidden">退出</button></div>
+  <div class="top-right"><span id="phaseMini"></span><span>v0.1.15</span><button id="leaveBtn" class="danger hidden">退出</button></div>
 </header>
 <main>
 <section id="titleView" class="view active">
@@ -65,6 +65,7 @@
         <div id="bonusInfo" class="bonus-info"></div>
       </div>
       <div id="finalAnswerArea" class="final-answer hidden"></div>
+      <div id="answerRevealBoard" class="answer-reveal-board hidden"></div>
       <div id="resultArea" class="result hidden"></div>
     </section>
 
@@ -110,6 +111,7 @@
           </table>
         </div>
       </div>
+      <div id="revealPredictionsPanel" class="reveal-predictions hidden"></div>
     </aside>
   </div>
 </section>
@@ -130,9 +132,24 @@
     <button id="roundEndOk" class="primary big">OK</button>
   </div>
 </div>
+
+<div id="finalThinkingReadyModal" class="round-end-modal hidden">
+  <div class="round-end-card">
+    <div class="round-end-message">最終シンキングタイム<br>答えを入力してください</div>
+    <button id="finalThinkingStartBtn" class="primary big">OK</button>
+    <div id="finalThinkingWait" class="hidden">ホストのOKを待っています…</div>
+  </div>
+</div>
+<div id="answerRevealReadyModal" class="round-end-modal hidden">
+  <div class="round-end-card">
+    <div class="round-end-message">答え合わせ</div>
+    <button id="answerRevealStartBtn" class="primary big">OK</button>
+    <div id="answerRevealWait" class="hidden">ホストのOKを待っています…</div>
+  </div>
+</div>
 <div id="modal" class="modal hidden"><div class="modal-card"><div id="modalBody"></div><div class="modal-actions"><button id="modalClose">閉じる</button></div></div></div>
 <div id="toast" class="toast hidden"></div>
 <div id="bigPop" class="big-pop hidden"></div>
-<script src="app.js?v=0.1.13"></script>
+<script src="app.js?v=0.1.15"></script>
 </body>
 </html>
