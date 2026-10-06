@@ -1,6 +1,6 @@
 let mobileSheetView='record';
 'use strict';
-const VERSION='0.1.18';
+const VERSION='0.1.19';
 // デプロイ後のWorker URLに変更してください。
 const SERVER_URL='https://strange-slot-online.naitoryo7110.workers.dev';
 const COMMON_PLAYER_NAME_KEY='boardgamePlayerName';
@@ -64,7 +64,22 @@ function renderLobby(){$('#roomNo').textContent=String(roomId).replace('room',''
 function writeLobbySettingsDraft(){if(!lobbySettingsDraft)return;$('#investigateSec').value=lobbySettingsDraft.investigateSec;$('#thinkingSec').value=lobbySettingsDraft.thinkingSec;$('#finalThinkingSec').value=lobbySettingsDraft.finalThinkingSec}
 function readLobbySettingsDraft(){return {investigateSec:+$('#investigateSec').value,thinkingSec:+$('#thinkingSec').value,finalThinkingSec:+$('#finalThinkingSec').value}}
 function markLobbySettingsDirty(){if(!me?.isHost)return;lobbySettingsDraft=readLobbySettingsDraft();lobbySettingsDirty=true}
-function renderGame(){document.body.classList.toggle('final-thinking-mode',state.phase==='final_thinking');document.body.classList.toggle('result-mode',state.phase==='result');renderPlayers();$('#roundInfo').innerHTML=`<b>ラウンド ${state.round}/4</b><br>${phaseLabel(state.phase)}${state.selectTurnName?`<br>選択：${esc(state.selectTurnName)}`:''}`;$('#machineBox').innerHTML=`現在台：<b>${me.machine||'なし'}</b>${me.ticket!=null?`<br>抽選券：${me.ticket}`:''}`;$('#moveBtn').disabled=state.phase!=='investigate'||!me.machine||state.moveLocked;$('#moveBtn').textContent=state.moveLocked?`${state.moveLockName||'誰か'}が台移動中`:'台移動';renderTicket();renderMachineSelect();renderDrawControls();renderNotebook();renderSheetTabs();renderFinalAnswer();renderAnswerReveal();renderResult()}
+function renderGame(){document.body.classList.toggle('final-thinking-mode',state.phase==='final_thinking');document.body.classList.toggle('result-mode',state.phase==='result');renderPlayers();$('#roundInfo').innerHTML=`<b>ラウンド ${state.round}/4</b><br>${phaseLabel(state.phase)}${state.selectTurnName?`<br>選択：${esc(state.selectTurnName)}`:''}`;$('#machineBox').innerHTML=`現在台：<b>${me.machine||'なし'}</b>${me.ticket!=null?`<br>抽選券：${me.ticket}`:''}`;$('#moveBtn').disabled=state.phase!=='investigate'||!me.machine||state.moveLocked;$('#moveBtn').textContent=state.moveLocked?`${state.moveLockName||'誰か'}が台移動中`:'台移動';renderEarlyFinalButton();renderTicket();renderMachineSelect();renderDrawControls();renderNotebook();renderSheetTabs();renderFinalAnswer();renderAnswerReveal();renderResult()}
+
+function renderEarlyFinalButton(){
+ const b=$('#earlyFinalBtn');
+ const allowed=['machine_select','investigate_ready','investigate','round_end','thinking'].includes(state?.phase);
+ b.classList.toggle('hidden',!(me?.isHost&&allowed));
+ b.disabled=false;
+}
+async function goEarlyFinalThinking(){
+ if(!me?.isHost)return;
+ if(!confirm('最終シンキングタイムへ移りますか？'))return;
+ const b=$('#earlyFinalBtn');
+ b.disabled=true;
+ const r=await action('goFinalThinkingReady',{});
+ if(!r?.ok)b.disabled=false;
+}
 
 function renderPhaseModals(){
   // 重要フェーズのモーダルは通常盤面描画より先に更新する。
@@ -118,7 +133,7 @@ async function startAnswerReveal(){const b=$('#answerRevealStartBtn');b.disabled
 function renderAnswerReveal(){const revealOn=state?.phase==='answer_reveal';const keepPred=['answer_reveal','result'].includes(state?.phase);const board=$('#answerRevealBoard'),pane=$('#rightPane'),pred=$('#revealPredictionsPanel');board.classList.toggle('hidden',!revealOn);pane.classList.toggle('reveal-mode',keepPred);pred.classList.toggle('hidden',!keepPred);if(!keepPred)return;if(revealSeenSession!==state.gameSessionId){revealSeenSession=state.gameSessionId;revealSeen=new Set()}const revealed=state.revealedSolutions||{};if(revealOn)board.innerHTML=['A','B','C','D','E','F'].map(m=>{const is=Number.isFinite(Number(revealed[m]));const seen=revealSeen.has(m);return `<button class="answer-reveal-card ${is&&seen?'flipped':''}" data-machine="${m}" ${!me.isHost||is?'disabled':''}><span class="reveal-card-inner"><span class="reveal-card-front">${m}</span><span class="reveal-card-back">設定${is?revealed[m]:'?'}</span></span></button>`}).join('');for(const m of ['A','B','C','D','E','F']){if(revealed[m]!=null&&!revealSeen.has(m)){const el=board.querySelector(`[data-machine="${m}"]`);requestAnimationFrame(()=>requestAnimationFrame(()=>el?.classList.add('flipped')));revealSeen.add(m)}}board.querySelectorAll('[data-machine]:not(:disabled)').forEach(b=>b.onclick=()=>{b.disabled=true;action('revealMachine',{machine:b.dataset.machine})});const rows=state.answerPredictions||[];pred.innerHTML=`<div class="reveal-pred-title">全プレイヤーの予測</div><div class="reveal-pred-grid"><div class="rp-head">プレイヤー</div>${['A','B','C','D','E','F'].map(m=>`<div class="rp-head">${m}</div>`).join('')}${rows.map(r=>`<div class="rp-name">${esc(r.name)}</div>${['A','B','C','D','E','F'].map(m=>`<div class="rp-cell">${r.answer?.[m]?r.answer[m]:'-'}</div>`).join('')}`).join('')}</div>`}
 
 function renderResult(){const a=$('#resultArea');a.classList.toggle('hidden',state.phase!=='result');if(state.phase!=='result')return;const results=[...(state.results||[])].sort((x,y)=>y.score-x.score);const winners=state.winners||[];const winText=winners.length>1?`${winners.map(esc).join(' / ')} 同率勝利！`:`${esc(winners[0]||'')} 勝利！`;a.innerHTML=`<div class="winner-banner">${winText}</div><div class="score-list"><div class="score-head">プレイヤー</div><div class="score-head">得点</div>${results.map(r=>`<div class="score-name ${winners.includes(r.name)?'winner':''}">${esc(r.name)}</div><div class="score-value ${winners.includes(r.name)?'winner':''}">${r.score} / 6</div>`).join('')}</div>${me.isHost?'<button id="backLobby" class="primary">ロビーへ戻る</button>':''}`;$('#backLobby')?.addEventListener('click',()=>action('backLobby',{}))}
-async function action(type,payload={}){try{const commonTypes=new Set(['settings','start','startInvestigate','startFinalThinking','startAnswerReveal','reset']);const actionId=commonTypes.has(type)?newActionId(type):undefined;return await api(`/api/room/${roomId}/action`,{method:'POST',body:JSON.stringify({token,type,...payload,...(actionId?{actionId}:{})})})}catch(e){toast(e.message)}}
+async function action(type,payload={}){try{const commonTypes=new Set(['settings','start','startInvestigate','goFinalThinkingReady','startFinalThinking','startAnswerReveal','reset']);const actionId=commonTypes.has(type)?newActionId(type):undefined;return await api(`/api/room/${roomId}/action`,{method:'POST',body:JSON.stringify({token,type,...payload,...(actionId?{actionId}:{})})})}catch(e){toast(e.message)}}
 
 function renderInvestigateReady(){
  const modal=$('#investigateReadyModal');
@@ -186,6 +201,7 @@ $('#resetBtn').onclick=()=>confirm('ROOMを完全に初期化しますか？')&&
 $('#leaveBtn').onclick=leave;
 $('#moveBtn').onclick=openMove;
 $('#memoBtn').onclick=openMemo;
+$('#earlyFinalBtn').onclick=goEarlyFinalThinking;
 $('#modalClose').onclick=closeModal;$('#roundEndOk').onclick=acknowledgeRoundEnd;$('#investigateStartBtn').onclick=startInvestigation;$('#finalThinkingStartBtn').onclick=startFinalThinking;$('#answerRevealStartBtn').onclick=startAnswerReveal;
 $('#deleteModeBtn').onclick=()=>{deleteMode=!deleteMode;renderNotebook()};
 $('#recordTabBtn').onclick=()=>setSheetView('record');
