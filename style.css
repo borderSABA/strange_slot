@@ -426,3 +426,25 @@ main{height:calc(100vh - 46px)}.view{display:none;height:100%}.view.active{displ
 @media(max-width:760px){.settings{grid-template-columns:1fr}.settings .mode-line{grid-column:auto}.settings .setting-line{min-height:34px}.settings .setting-line input{width:82px}}
 
 .mode-badge{display:inline-block;margin-left:5px;padding:1px 5px;border:1px solid var(--line);border-radius:999px;font-size:.78em;vertical-align:1px;}
+
+
+/* v0.1.23: lobby is the only in-room view allowed to scroll vertically. */
+#lobbyView{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+#lobbyView .lobby-panel{max-height:none;overflow:visible;margin-bottom:18px;}
+.settings .auto-record-line input[type=checkbox]{width:22px;height:22px;margin:0;accent-color:#2967d8;}
+@media(max-width:760px){
+  #lobbyView{overflow-y:auto;overscroll-behavior-y:contain;}
+  #lobbyView .lobby-panel{margin:6px auto 18px;max-height:none;overflow:visible;padding-bottom:16px;}
+  #gameView{overflow:hidden;}
+}
+
+
+/* v0.1.24 final answer confirmation */
+.final-confirm-wrap{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px}
+.final-confirm-wrap button{min-width:140px}
+.final-confirm-count{font-weight:800;font-size:13px;white-space:nowrap}
+@media(max-width:760px){
+  body.final-thinking-mode .final-confirm-wrap{margin-top:0;gap:6px;min-height:30px}
+  body.final-thinking-mode .final-confirm-wrap button{height:30px;min-width:100px;padding:3px 8px;font-size:11px}
+  body.final-thinking-mode .final-confirm-count{font-size:9px}
+}
